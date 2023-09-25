@@ -1,3 +1,5 @@
+cl.exe /D_USRDLL /D_WINDLL testdll.cpp /MT /link /DLL /OUT:implants.dll /SUBSYSTEM:WINDOWS /MACHINE:x86
+
 #include <windows.h>
 
 unsigned char shellcode[] = {
@@ -287,5 +289,35 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 
 
 
+#include <Windows.h>
+#pragma comment (lib, "user32.lib")
 
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
+    switch (ul_reason_for_call) {
+        case DLL_PROCESS_ATTACH:
+            // Display a message box when the DLL is loaded
+            MessageBox(
+                NULL,
+                "DLL Loaded!",
+                "DLL Message",
+                MB_OK
+            );
+            break;
+        case DLL_PROCESS_DETACH:
+        case DLL_THREAD_ATTACH:
+        case DLL_THREAD_DETACH:
+            break;
+    }
+    return TRUE;
+}
+
+extern "C" {
+    __declspec(dllexport) BOOL WINAPI RunME(void) {
+        // This function can be called, but it won't display the message box again
+        return TRUE;
+    }
+}
+
+
+######For referance, works as intended, no shell code#####
 
